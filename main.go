@@ -1,7 +1,6 @@
 package main
 
- 
-
+ // import the required package and its dependencies
 import (
     "encoding/json"
     "fmt"
@@ -11,7 +10,7 @@ import (
     "strings"
 )
 
- 
+// define the structure which will be used in the request
 
 type Subscription struct {
     ID          string `json:"id"`
@@ -23,6 +22,7 @@ type Subscription struct {
 }
 
  
+// main function
 
 func main() {
     subscriptionID := "<subscription-id>"
@@ -30,7 +30,7 @@ func main() {
     url := fmt.Sprintf("https://management.azure.com/subscriptions/%s?api-version=%s", subscriptionID, apiVersion)
 
  
-
+    // calling the getAccessToken method to get the access token
     accessToken, err := getAccessToken()
     if err != nil {
         fmt.Printf("Oh, We are failed to get access token: %s\n", err.Error())
@@ -38,7 +38,7 @@ func main() {
     }
 
  
-
+    // calling the getSubscriptionDetails method to get the subscription details.
     subscriptionJSON, err := getSubscriptionDetails(url, accessToken)
     if err != nil {
         fmt.Printf("Oh, We are failed to get subscription details: %s\n", err.Error())
@@ -46,23 +46,20 @@ func main() {
     }
 
  
+    // calling the printSubscriptionDetails method and assign the values to the sample_data variable
 
     sample_data, err := printSubscriptionDetails(subscriptionJSON)
 
     fmt.Println("\nSubscription Details:")
     fmt.Printf("Subscription ID: %s\n", strings.TrimPrefix(sample_data.ID, "/subscriptions/")    )
-    // fmt.Println("This is the id without trim")
-    // fmt.Printf("Subscription ID: %s\n", subscriptionID)
-    // fmt.Println("This is the id without trim with the sample_data")
-    // fmt.Printf("Subscription ID: %s\n", sample_data.ID)
+
     fmt.Printf("Display Name: %s\n", sample_data.DisplayName)
     fmt.Printf("State: %s\n", sample_data.State)
     fmt.Printf("Tenant ID: %s\n", sample_data.TenantID)
-    // fmt.Printf("Quota ID: %s\n", sample_data.QuotaID)
 }
 
  
-
+// function to get the access token 
 func getAccessToken() (string, error) {
     cmd := exec.Command("az", "account", "get-access-token", "--query", "accessToken", "--output", "tsv")
     output, err := cmd.Output()
@@ -75,7 +72,7 @@ func getAccessToken() (string, error) {
     return strings.TrimSpace(string(output)), nil
 }
 
- 
+// function to fetch the subcription information
 
 func getSubscriptionDetails(url, accessToken string) ([]byte, error) {
     client := &http.Client{}
@@ -109,7 +106,7 @@ func getSubscriptionDetails(url, accessToken string) ([]byte, error) {
 }
 
  
-
+// print the values of subcription into a normal text from the JSON response
 func printSubscriptionDetails(subscriptionJSON []byte) (Subscription, error) {
     fmt.Println("Complete JSON Response:")
     fmt.Println(string(subscriptionJSON))
